@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from clipforge import orchestrator  # noqa: E402
+from clipforge import claude_agents, orchestrator  # noqa: E402
 from clipforge.llm import AgentRunner, load_agent  # noqa: E402
 
 WORK = ROOT / "runs" / "_smoke"
@@ -78,6 +78,8 @@ def mock(name, p):
 def main():
     for a in ("campaign_scout", "moment_scout", "critic", "transform", "packager", "compliance", "analyst"):
         load_agent(a)  # every spec parses
+    stale = claude_agents.sync(check=True)
+    assert not stale, f"stale .claude/agents mirrors {stale}; run: python -m clipforge.claude_agents"
     vid = make_fixture()
     cfg = orchestrator.load_cfg()
     cfg["render"]["preset"] = "ultrafast"
