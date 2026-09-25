@@ -40,13 +40,19 @@ DESCRIPTIONS = {
 HEADER = "<!-- GENERATED from agents/{name}.md by `python -m clipforge.claude_agents`. Do not edit here. -->\n\n"
 
 
+def _role_line(system: str) -> str:
+    """Fallback description for an agent not yet listed in DESCRIPTIONS: its '# Role: ...' heading."""
+    first = next((ln for ln in system.splitlines() if ln.startswith("# ")), "# ClipForge specialist")
+    return "ClipForge " + first.lstrip("# ").replace("Role: ", "")
+
+
 def render(name: str) -> str:
     text = (AGENTS_DIR / f"{name}.md").read_text()
     meta = yaml.safe_load(text.split("---\n", 2)[1]) or {}
     spec = load_agent(name)
     front = {
         "name": name.replace("_", "-"),
-        "description": DESCRIPTIONS[name],
+        "description": DESCRIPTIONS.get(name) or _role_line(spec.system),
         "tools": "Read, Glob, Grep",
         "model": meta.get("model", "sonnet"),
     }
@@ -64,7 +70,11 @@ def render(name: str) -> str:
 
 
 def sync(check: bool = False) -> list[str]:
-    """Write mirrors (or, with check=True, only report). Returns the paths that were/are stale."""
+    """Write mirrors (or, with check=True, only report). Returns the paths that were/are stale.
+
+    Generated files whose source agent no longer exists count as stale and are removed; hand-written
+    subagents in .claude/agents/ (no GENERATED header) are left alone.
+    """
     stale = []
     names = sorted(p.stem for p in AGENTS_DIR.glob("*.md"))
     expected = {OUT_DIR / f"{n.replace('_', '-')}.md": render(n) for n in names}
@@ -74,6 +84,11 @@ def sync(check: bool = False) -> list[str]:
             if not check:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content)
+    for path in sorted(OUT_DIR.glob("*.md")) if OUT_DIR.exists() else []:
+        if path not in expected and "<!-- GENERATED from agents/" in path.read_text():
+            stale.append(str(path.relative_to(ROOT)))
+            if not check:
+                path.unlink()
     return stale
 
 
@@ -82,4 +97,4 @@ if __name__ == "__main__":
     stale = sync(check=check)
     if check and stale:
         sys.exit(f"stale Claude Code subagents: {stale}\nrun: python -m clipforge.claude_agents")
-    print(("stale: " if check else "wrote: ") + (", ".join(stale) or "nothing, all in sync"))
+    print(("stale: " if check else "synced: ") + (", ".join(stale) or "nothing, all in sync"))
