@@ -1,0 +1,23 @@
+id: example-streamer
+name: "Example Streamer — Kick clipping campaign"
+source: whop            # whop | vyro | clipping | kick-direct | direct-deal
+creator: ExampleStreamer
+niche: streamers
+url: https://whop.com/  # campaign page
+cpm_usd: 1.50
+min_payout_usd: 3
+cap_per_clip_usd: 300
+budget_remaining_usd: 12000
+platform_fee_pct: 8     # reported withdrawal fee range; confirm per campaign
+verified_view_haircut_pct: 15
+submissions_so_far: 2400
+rules:
+  required_tags: ["@examplestreamer", "#examplestreamer"]
+  required_mentions_in_caption: ["Live on Kick"]
+  banned: ["other streamers' names", "gambling", "misleading titles"]
+  min_length_s: 15
+  max_length_s: 90
+  platforms_allowed: [tiktok, youtube_shorts, instagram_reels]
+  link_accounts_before_posting: true
+  geo: tier1
+notes: "Pays for IRL + reaction moments; rejects gameplay-only clips."

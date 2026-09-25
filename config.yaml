@@ -1,0 +1,57 @@
+operator:
+  country: CA            # Toronto — Ad Standards Canada + Competition Act apply
+  disclosure:
+    required: true
+    tag: "#ad"           # Ad Standards (Oct 2025) "gold standard"; must be visible before caption truncation
+    platform_labels: true  # TikTok commercial toggle, YT paid promotion, Meta Paid Partnership
+  niches: [streamers, podcasts, business]
+  avoid_niches: [gambling]   # Ontario AGCO restricts gambling ads — skip Stake/Roobet-style briefs
+  accounts:
+    tiktok: 1
+    youtube_shorts: 1
+    instagram_reels: 1
+  clips_per_day_capacity: 15
+
+transcribe:
+  engine: auto           # whisperx | faster_whisper | auto
+  model: large-v3-turbo
+  device: cuda           # cpu works, ~10x slower
+  diarize: true          # needs HF_TOKEN for pyannote community-1
+
+signals:
+  weights:               # re-tuned automatically by the Analyst from real views
+    chat_velocity: 1.0
+    emote_burst: 0.8
+    loudness: 0.5
+    laughter: 0.7
+  chat_lag_seconds: 8    # chat reacts after the moment; tune per streamer (5–20)
+  z_threshold: 1.0
+  min_gap_seconds: 45
+  max_peaks: 40
+  window_pre: 35
+  window_post: 20
+  laughter_model: false
+
+clips:
+  length_seconds: [20, 55]   # 30–45s sweet spot; TikTok Creator Rewards needs 60s+ but campaigns pay on views
+  max_per_vod: 8
+
+render:
+  font: DejaVu Sans      # swap for Montserrat/Inter ExtraBold once installed
+  caption_size: 78
+  caption_margin_v: 560  # keeps captions above TikTok/Reels bottom UI
+  hook_size: 84
+  hook_margin_v: 300     # below top ~15% safe zone
+  words_per_line: 3
+  preset: medium
+  mediapipe_model: models/blaze_face_short_range.tflite   # optional; falls back to OpenCV
+
+publish:
+  dry_run: true          # flip to false only after reviewing REVIEW.md output
+  upload_post_user: your-upload-post-profile
+  platforms: [tiktok, youtube_shorts, instagram_reels]
+  tiktok_draft_mode: true    # unaudited API = private; finish in app with commercial toggle
+  first_post_delay_minutes: 30
+  stagger_minutes: 90
+  timezone: America/Toronto
+  extra_fields: {}

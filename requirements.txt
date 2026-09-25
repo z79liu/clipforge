@@ -1,0 +1,13 @@
+anthropic>=0.60
+pydantic>=2.7
+pyyaml
+numpy
+opencv-python-headless
+requests
+yt-dlp
+chat-downloader          # YouTube/Kick chat replay (pin a version; see README for the Kick fork)
+# GPU box (recommended):
+# whisperx               # word timestamps + pyannote community-1 diarization (needs HF_TOKEN)
+# faster-whisper         # fallback transcription
+# mediapipe              # better face tracking; download blaze_face_short_range.tflite into models/
+# System: ffmpeg (with libass), TwitchDownloaderCLI for Twitch chat
