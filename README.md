@@ -28,6 +28,9 @@ VOD/stream URL → [1 Ingest] → [2 Transcribe] → [3 Signals] ─ chat veloci
 ## You control every agent
 Each specialist is a file in `agents/`. Its frontmatter sets `model` (haiku, sonnet or opus), `temperature` and `max_tokens`, and the body is the agent's full instructions. You can edit any file directly. `agents/exemplars/` is written by the Analyst after each feedback run and gets appended to the Scout's and Critic's prompts, so their picks track what actually earned money.
 
+### Claude Code subagents
+`.claude/agents/` mirrors each specialist as a Claude Code subagent (same prompt and model, plus its JSON output contract), so Claude Code can act as the orchestrator itself: run the code layers, then delegate each judgment call to `campaign-scout`, `moment-scout`, `critic`, `transform`, `packager`, `compliance` or `analyst`. The mirrors are generated, so edit `agents/*.md` and then run `python -m clipforge.claude_agents`. The smoke test fails if the mirrors are out of date. Claude Code subagents ignore `temperature` and `max_tokens`. When delegating to `critic`, pass only the campaign and candidate spans to keep it blind.
+
 ## Setup
 ```bash
 pip install -r requirements.txt          # plus whisperx on a GPU machine
